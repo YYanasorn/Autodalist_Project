@@ -59,7 +59,7 @@ def job():
         for device_letter, ip_address in ip_addresses.items():
             data  = snapRun(device_letter, ip_address)
             print(data[5])
-            if float(data[5]) >= 3600:
+            if float(data[5]) >= 100:
                 wb = create_or_load_workbook()
                 snap_data = snapRun(device_letter, ip_address)
                 new_sheet_name = snap_data[0]
@@ -94,7 +94,7 @@ def job():
         print("Error:", e)
 
 # Schedule the job to run every 10 minutes
-schedule.every(10).minutes.do(job)
+schedule.every(0.1).minutes.do(job)
 
 # Run the scheduler indefinitely
 while True:
