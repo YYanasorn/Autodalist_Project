@@ -96,7 +96,11 @@ def job():
         conn.close()
         print("Data inserted and Excel updated successfully")
     except Exception as e:
+        conn.close()
         print("Error:", e)
+    finally:
+        print("Close Database")
+        conn.close()
 
 schedule.every(10).minutes.do(job)
 
