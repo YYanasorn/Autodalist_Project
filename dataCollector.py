@@ -12,9 +12,13 @@ def snapRun(device_letter, ip_address):
     counterDword = [0]
     counterReal = [16, 52, 88, 124, 196, 232, 268, 304, 376, 340, 160]
     client = snap7.client.Client()
-    client.connect(ip_address, 0, 1)
-    client.get_connected()
-    
+    try:
+        client.connect(ip_address, 0, 1)
+        client.get_connected()
+    except Exception as e:
+        print(f"Error connecting to {ip_address}: {e}")
+        return None
+
     values = [device_letter, datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
 
     for countDword in counterDword:
@@ -32,6 +36,7 @@ def snapRun(device_letter, ip_address):
     client.disconnect()
 
     return values
+
 
 def find_empty_column(ws, row):
     col = 3
@@ -59,7 +64,7 @@ def job():
         for device_letter, ip_address in ip_addresses.items():
             data  = snapRun(device_letter, ip_address)
             print(data[5])
-            if float(data[5]) >= 100:
+            if float(data[5]) >= 5000:
                 wb = create_or_load_workbook()
                 snap_data = snapRun(device_letter, ip_address)
                 new_sheet_name = snap_data[0]
@@ -93,10 +98,8 @@ def job():
     except Exception as e:
         print("Error:", e)
 
-# Schedule the job to run every 10 minutes
-schedule.every(0.1).minutes.do(job)
+schedule.every(10).minutes.do(job)
 
-# Run the scheduler indefinitely
 while True:
     schedule.run_pending()
     time.sleep(1)
